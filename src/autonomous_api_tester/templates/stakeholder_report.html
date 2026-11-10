@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ report.report_title }}</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            background: #f3f5f9;
+            color: #263247;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        .header {
+            background: #172b4d;
+            color: white;
+            padding: 35px;
+            border-radius: 12px;
+        }
+
+        .header h1 {
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
+
+        .header p {
+            color: #d4deed;
+            margin: 5px 0;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            margin-top: 22px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        h2 {
+            font-size: 19px;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e8edf3;
+        }
+
+        .summary {
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+        }
+
+        .stat {
+            border: 1px solid #e5eaf1;
+            padding: 18px;
+            border-radius: 9px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 27px;
+        }
+
+        .stat span {
+            color: #718096;
+            font-size: 13px;
+        }
+
+        .passed { color: #16834b; }
+        .failed { color: #d64545; }
+        .error { color: #c07816; }
+        .skipped { color: #64748b; }
+
+        .status {
+            display: inline-block;
+            padding: 7px 15px;
+            border-radius: 20px;
+            background: #e8edf5;
+            color: #334155;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .recommendation {
+            border-left: 5px solid #356ac3;
+            background: #eef4ff;
+            padding: 20px;
+            border-radius: 7px;
+        }
+
+        .risk {
+            border-left: 4px solid #d97706;
+            background: #fffbeb;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+
+        .finding {
+            border-left: 4px solid #64748b;
+            background: #f7f9fc;
+            padding: 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+
+        ul {
+            padding-left: 22px;
+        }
+
+        li {
+            margin-bottom: 9px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #8190a5;
+            font-size: 12px;
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 12px; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .section { padding: 17px; }
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .section { box-shadow: none; break-inside: avoid; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header class="header">
+        <h1>{{ report.report_title }}</h1>
+
+        <p><strong>Jira Story:</strong> {{ report.story_id }}</p>
+
+        <p><strong>Feature:</strong> {{ report.feature_summary }}</p>
+
+        <p>
+            <strong>Testing Status:</strong>
+            <span class="status">
+                {{ report.overall_status | replace('_', ' ') }}
+            </span>
+        </p>
+    </header>
+
+    <section class="section">
+        <h2>Executive Summary</h2>
+        <p class="summary">{{ report.executive_summary }}</p>
+    </section>
+
+    <section class="section">
+        <h2>Testing Overview</h2>
+
+        <div class="stats">
+            <div class="stat">
+                <strong>{{ report.total_tests }}</strong>
+                <span>Total Tests</span>
+            </div>
+
+            <div class="stat">
+                <strong class="passed">{{ report.passed_tests }}</strong>
+                <span>Passed</span>
+            </div>
+
+            <div class="stat">
+                <strong class="failed">{{ report.failed_tests }}</strong>
+                <span>Failed</span>
+            </div>
+
+            <div class="stat">
+                <strong class="error">{{ report.errored_tests }}</strong>
+                <span>Errors</span>
+            </div>
+
+            <div class="stat">
+                <strong class="skipped">{{ report.skipped_tests }}</strong>
+                <span>Skipped</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>Quality Assessment</h2>
+        <p>{{ report.quality_assessment }}</p>
+    </section>
+
+    <section class="section">
+        <h2>Key Findings</h2>
+
+        {% for finding in report.key_findings %}
+        <div class="finding">
+            {{ finding }}
+        </div>
+        {% else %}
+        <p>No key findings reported.</p>
+        {% endfor %}
+    </section>
+
+    <section class="section">
+        <h2>Business Risks</h2>
+
+        {% for risk in report.business_risks %}
+        <div class="risk">
+            {{ risk }}
+        </div>
+        {% else %}
+        <p>No business risks reported.</p>
+        {% endfor %}
+    </section>
+
+    <section class="section">
+        <h2>Outstanding Actions</h2>
+
+        <ul>
+            {% for action in report.outstanding_actions %}
+            <li>{{ action }}</li>
+            {% else %}
+            <li>No outstanding actions reported.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="section">
+        <h2>Release Recommendation</h2>
+
+        <div class="recommendation">
+            <h3>
+                {{ report.release_recommendation
+                    | replace('_', ' ')
+                    | title }}
+            </h3>
+
+            <p>{{ report.final_recommendation }}</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        Generated by Autonomous AI API Testing Agent
+        <br>
+        This report is an automated assessment and not a formal release approval.
+    </footer>
+
+</div>
+</body>
+</html>

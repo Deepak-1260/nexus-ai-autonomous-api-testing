@@ -1,0 +1,154 @@
+[
+  {
+  "operation_id": "get_post_by_id",
+  "method": "GET",
+  "path": "/posts/{id}",
+  "description": "Retrieve a post by its ID",
+  "path_parameters": {
+    "id": "integer"
+  },
+  "expected_status": 200,
+  "response_fields": ["userId", "id", "title", "body"]
+},
+{
+  "operation_id": "get_task_by_id",
+  "method": "GET",
+  "path": "/tasks/{task_id}",
+  "description": "Retrieve a task by its ID",
+  "path_parameters": {
+    "task_id": "integer"
+  },
+  "expected_status": 200,
+  "response_fields": [
+    "id",
+    "title",
+    "description",
+    "priority",
+    "status"
+  ],
+  "error_responses": {
+    "404": "Task not found",
+    "422": "Invalid task ID type"
+  }
+},
+{
+  "operation_id": "get_all_tasks",
+  "method": "GET",
+  "path": "/tasks",
+  "description": "Retrieve all tasks",
+
+  "path_parameters": {},
+
+  "query_parameters": {},
+
+  "request_body": null,
+
+  "expected_status": 200,
+
+  "response_schema": {
+    "type": "array",
+    "items": {
+      "id": "integer",
+      "title": "string",
+      "description": "string | null",
+      "priority": {
+        "type": "string",
+        "allowed_values": ["low", "medium", "high"]
+      },
+      "status": {
+        "type": "string",
+        "allowed_values": [
+          "pending",
+          "in_progress",
+          "completed"
+        ]
+      }
+    }
+  },
+
+  "response_fields": [
+    "id",
+    "title",
+    "description",
+    "priority",
+    "status"
+  ],
+
+  "additional_behavior": [
+    "Returns an empty array when no tasks exist.",
+    "Returns all currently stored tasks when tasks exist."
+  ]
+},
+{
+    "operation_id": "create_task",
+    "method": "POST",
+    "path": "/tasks",
+    "summary": "Create a new task",
+    "description": "Creates a new task using the details provided in the request body.",
+    "request": {
+      "body": {
+        "required": true,
+        "content_type": "application/json",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "min_length": 3,
+              "max_length": 100
+            },
+            "description": {
+              "type": ["string", "null"]
+            },
+            "priority": {
+              "type": "string",
+              "enum": ["low", "medium", "high"],
+              "default": "medium"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["pending", "in_progress", "completed"],
+              "default": "pending"
+            }
+          },
+          "required": ["title"]
+        }
+      }
+    },
+    "response": {
+      "success": {
+        "status_code": 201,
+        "description": "Task created successfully",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": ["string", "null"]
+            },
+            "priority": {
+              "type": "string",
+              "enum": ["low", "medium", "high"]
+            },
+            "status": {
+              "type": "string",
+              "enum": ["pending", "in_progress", "completed"]
+            }
+          },
+          "required": [
+            "id",
+            "title",
+            "description",
+            "priority",
+            "status"
+          ]
+        }
+      }
+    }
+  }
+]

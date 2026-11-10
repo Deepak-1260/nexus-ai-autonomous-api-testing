@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ report.report_title }}</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6fa;
+            color: #263247;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: auto;
+        }
+
+        .header {
+            background: #172b4d;
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 26px;
+        }
+
+        .header p {
+            margin: 4px 0;
+            color: #d5deed;
+        }
+
+        .section {
+            background: white;
+            padding: 24px;
+            border-radius: 10px;
+            margin-bottom: 22px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        h2 {
+            font-size: 19px;
+            margin-top: 0;
+            border-bottom: 1px solid #e8edf3;
+            padding-bottom: 12px;
+        }
+
+        h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+        }
+
+        .stat {
+            padding: 18px;
+            border: 1px solid #e8edf3;
+            border-radius: 9px;
+            background: #fff;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 27px;
+        }
+
+        .stat span {
+            color: #68778c;
+            font-size: 13px;
+        }
+
+        .passed { color: #16834b; }
+        .failed { color: #d64545; }
+        .error { color: #c07816; }
+        .skipped { color: #64748b; }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-passed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-error {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-skipped {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .badge-neutral {
+            background: #e8edf5;
+            color: #334155;
+        }
+
+        .test-card {
+            border: 1px solid #e5eaf1;
+            border-radius: 9px;
+            padding: 18px;
+            margin-top: 15px;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .test-header h3 {
+            margin: 0;
+        }
+
+        .detail {
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .detail strong {
+            color: #34445c;
+        }
+
+        .evidence {
+            background: #f7f9fc;
+            padding: 12px 16px;
+            border-radius: 7px;
+            margin-top: 8px;
+        }
+
+        .evidence li {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .review {
+            color: #b45309;
+            font-weight: bold;
+        }
+
+        .no-review {
+            color: #16834b;
+            font-weight: bold;
+        }
+
+        ul {
+            padding-left: 22px;
+        }
+
+        li {
+            margin-bottom: 7px;
+        }
+
+        .conclusion {
+            background: #eef4ff;
+            border-left: 4px solid #356ac3;
+            padding: 18px;
+            border-radius: 6px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #8190a5;
+            font-size: 12px;
+            padding: 20px;
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 12px; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .section { padding: 16px; }
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .section { box-shadow: none; break-inside: avoid; }
+            .test-card { break-inside: avoid; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header class="header">
+        <h1>{{ report.report_title }}</h1>
+        <p><strong>Jira Story:</strong> {{ report.story_id }}</p>
+        <p><strong>Feature:</strong> {{ report.story_summary }}</p>
+        <p><strong>Overall Status:</strong>
+            <span class="badge badge-neutral">
+                {{ report.overall_status | replace('_', ' ') }}
+            </span>
+        </p>
+    </header>
+
+    <section class="section">
+        <h2>Execution Summary</h2>
+
+        <div class="stats">
+            <div class="stat">
+                <strong>{{ report.total_tests }}</strong>
+                <span>Total Tests</span>
+            </div>
+
+            <div class="stat">
+                <strong class="passed">{{ report.passed_tests }}</strong>
+                <span>Passed</span>
+            </div>
+
+            <div class="stat">
+                <strong class="failed">{{ report.failed_tests }}</strong>
+                <span>Failed</span>
+            </div>
+
+            <div class="stat">
+                <strong class="error">{{ report.errored_tests }}</strong>
+                <span>Errors</span>
+            </div>
+
+            <div class="stat">
+                <strong class="skipped">{{ report.skipped_tests }}</strong>
+                <span>Skipped</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>Test Case Execution Details</h2>
+
+        {% for test in report.test_case_reports %}
+
+        <div class="test-card">
+
+            <div class="test-header">
+                <h3>{{ test.scenario_id }} — {{ test.test_name }}</h3>
+
+                <span class="badge badge-{{ test.status }}">
+                    {{ test.status }}
+                </span>
+            </div>
+
+            <div class="detail">
+                <strong>Execution Time:</strong>
+                {{ "%.2f"|format(test.execution_time) }} seconds
+            </div>
+
+            {% if test.failure_type %}
+            <div class="detail">
+                <strong>Failure Type:</strong>
+                {{ test.failure_type | replace('_', ' ') | title }}
+            </div>
+            {% endif %}
+
+            {% if test.root_cause %}
+            <div class="detail">
+                <strong>Root Cause:</strong>
+                <p>{{ test.root_cause }}</p>
+            </div>
+            {% endif %}
+
+            {% if test.evidence %}
+            <div class="detail">
+                <strong>Supporting Evidence:</strong>
+                <div class="evidence">
+                    <ul>
+                        {% for item in test.evidence %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if test.remediation %}
+            <div class="detail">
+                <strong>Recommended Remediation:</strong>
+                <p>{{ test.remediation }}</p>
+            </div>
+            {% endif %}
+
+            <div class="detail">
+                <strong>Human Review:</strong>
+
+                {% if test.needs_human_review %}
+                <span class="review">Required</span>
+                {% else %}
+                <span class="no-review">Not Required</span>
+                {% endif %}
+            </div>
+
+        </div>
+
+        {% else %}
+        <p>No test execution results available.</p>
+        {% endfor %}
+    </section>
+
+    <section class="section">
+        <h2>Technical Findings</h2>
+        <ul>
+            {% for finding in report.technical_findings %}
+            <li>{{ finding }}</li>
+            {% else %}
+            <li>No technical findings reported.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="section">
+        <h2>Unresolved Issues</h2>
+        <ul>
+            {% for issue in report.unresolved_issues %}
+            <li>{{ issue }}</li>
+            {% else %}
+            <li>No unresolved issues reported.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="section">
+        <h2>Recommended Actions</h2>
+        <ul>
+            {% for action in report.recommended_actions %}
+            <li>{{ action }}</li>
+            {% else %}
+            <li>No additional actions recommended.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="section">
+        <h2>Overall Conclusion</h2>
+
+        <div class="conclusion">
+            {{ report.conclusion }}
+        </div>
+
+        <p>
+            <strong>Human Review Required:</strong>
+
+            {% if report.human_review_required %}
+            <span class="review">Yes</span>
+            {% else %}
+            <span class="no-review">No</span>
+            {% endif %}
+        </p>
+    </section>
+
+    <footer class="footer">
+        Generated by Autonomous AI API Testing Agent
+    </footer>
+
+</div>
+</body>
+</html>
