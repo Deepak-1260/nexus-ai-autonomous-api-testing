@@ -1,4 +1,4 @@
-::: {align="center"}
+
 # NEXUS AI
 
 ### Autonomous API Testing Platform
